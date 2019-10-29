@@ -1,0 +1,34 @@
+apiVersion: appsody.dev/v1beta1
+kind: AppsodyApplication
+metadata:
+  name: quote-frontend
+spec:
+  # Add fields here
+  version: 1.0.0
+  applicationImage: docker-registry.default.svc:5000/insurance-quote/quote-frontend:v1
+  env:
+  - name: BACKEND_URL
+    value: http://quote-backend-insurance-quote.cp4apps-workshop-prop-5290c8c8e5797924dc1ad5d1b85b37c0-0001.us-east.containers.appdomain.cloud/quote
+  stack: nodejs-express
+  service:
+    type: NodePort
+    port: 3000
+    annotations:
+      prometheus.io/scrape: 'true'
+  readinessProbe:
+    failureThreshold: 12
+    httpGet:
+      path: /ready
+      port: 3000
+    initialDelaySeconds: 5
+    periodSeconds: 2
+    timeoutSeconds: 1
+  livenessProbe:
+    failureThreshold: 12
+    httpGet:
+      path: /live
+      port: 3000
+    initialDelaySeconds: 5
+    periodSeconds: 2
+  expose: true
+  createKnativeService: false
